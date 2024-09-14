@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Input,
   Button,
   VStack,
   Text,
-  Stack,
   Spinner,
   Divider,
   Select,

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     Box,
     Flex,
@@ -8,7 +7,6 @@ import {
     IconButton,
     Button,
     Avatar,
-    Stack,
     Container,
     useColorModeValue,
 } from '@chakra-ui/react';
