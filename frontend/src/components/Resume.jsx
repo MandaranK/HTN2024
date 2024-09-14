@@ -9,6 +9,8 @@ import {
   FormControl,
   FormHelperText,
   Divider,
+  Spinner,
+  Progress,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -27,6 +29,9 @@ export default function Resume() {
   const [status, setStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [statusColor, setStatusColor] = useState("#745236");
+  const toast = useToast();
   const [feedback, setFeedback] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [modalIndex, setModalIndex] = useState(0);
@@ -36,6 +41,8 @@ export default function Resume() {
     const file = e.target.files[0];
     if (!file) {
       setFileName("No file chosen");
+      setStatus("");
+      setStatusColor("#745236");
       return;
     }
 
@@ -50,10 +57,13 @@ export default function Resume() {
     if (!isValidMimeType) {
       setStatus("Invalid file type. Please upload a .pdf, .doc, or .docx file.");
       setFileName("No file chosen");
+      setStatusColor("red.500");
       return;
     }
 
     setFileName(file.name);
+    setStatus("");
+    setStatusColor("#745236");
     setStatus(""); 
   };
 
@@ -70,6 +80,24 @@ export default function Resume() {
       return;
     }
 
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      setUploadProgress(progress);
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        setIsUploading(false);
+        setStatus("File uploaded successfully!");
+        toast({
+          title: "Upload Successful",
+          description: "Your resume has been uploaded.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }, 200);
     const formData = new FormData();
     formData.append("resume", file);
 
@@ -144,38 +172,43 @@ export default function Resume() {
   return (
     <Center minH="100vh" bg="#E3DCCC">
       <Box
-        p={6}
+        p={8}
         bg="white"
-        maxW="md"
+        maxW="xl"
         mx="auto"
         borderRadius="lg"
         boxShadow="lg"
         borderWidth={1}
         borderColor="#745236"
         textAlign="center"
+        transition="transform 0.3s ease, box-shadow 0.3s ease"
       >
         <VStack spacing={6} align="stretch">
-          <Text fontSize="3xl" fontWeight="bold" color="#745236">
+          <Text fontSize="4xl" fontWeight="bold" color="#745236">
             Upload Your Resume
           </Text>
           <Divider borderColor="#745236" />
+          <Text color="#745236" fontSize="lg">
+            Please upload your resume in PDF, DOC, or DOCX format.
+          </Text>
           <form onSubmit={handleFileUpload}>
-            <FormControl mb={4}>
+            <FormControl mb={6}>
               <CustomFileInput>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   as="label"
                   htmlFor="resume-upload"
-                  fontSize="md"
+                  fontSize="lg"
                   fontWeight="medium"
                   color="#745236"
                   mb={2}
                   borderRadius="md"
-                  _hover={{ bgColor: "#f2f2f2" }}
                   borderColor="#745236"
-                  borderWidth={1}
-                  boxShadow="sm"
-                  padding={2}
+                  borderWidth={2}
+                  padding={4}
+                  _hover={{ bgColor: "#C9B09D", borderColor: "#6b4f3c" }}
+                  _active={{ bgColor: "#d9d9d9" }}
+                  _focus={{ boxShadow: "outline" }}
                 >
                   Choose File
                 </Button>
@@ -187,10 +220,12 @@ export default function Resume() {
                   style={{ display: "none" }}
                   onChange={handleFileChange}
                 />
-                <Text color="#745236">{fileName}</Text>
+                <Text color="#745236" fontSize="lg">
+                  {fileName}
+                </Text>
               </CustomFileInput>
-              <FormHelperText color="#745236" mt={2}>
-                Supported file types: .pdf, .doc, .docx
+              <FormHelperText color={statusColor} mt={2}>
+                {status}
               </FormHelperText>
             </FormControl>
             <Button
@@ -203,14 +238,28 @@ export default function Resume() {
               borderRadius="md"
               bg="#745236"
               _hover={{ bg: "#6b4f3c" }}
+              _active={{ bg: "#5a3d2d" }}
+              _focus={{ boxShadow: "outline" }}
+              rightIcon={isUploading ? <Spinner size="sm" color="white" /> : null}
             >
-              Upload
+              {isUploading ? "Uploading..." : "Upload"}
             </Button>
+            {isUploading && (
+              <Box mt={4}>
+                <Progress value={uploadProgress} colorScheme="teal" size="md" />
+                <Text color="#745236" mt={2}>
+                  {uploadProgress}% Upload Progress
+                </Text>
+              </Box>
+            )}
           </form>
           {status && (
-            <Text color="#745236" mt={4}>
-              {status}
-            </Text>
+            <>
+                <Text color={statusColor} mt={4} />
+                <Text color="#745236" mt={4}>
+                {status}
+                </Text>
+            </>
           )}
         </VStack>
       </Box>
