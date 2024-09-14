@@ -48,7 +48,7 @@ const JobJourneyUI = () => {
                                 </Text>
                             </Flex>
                             <HStack spacing={8} display={{ base: 'none', md: 'flex' }}>
-                                {['Features', 'Profile', 'Experience'].map((item) => (
+                                {['Features', 'Objective', 'Experience', 'References', 'Team'].map((item) => (
                                     <AnimatedBox
                                         key={item}
                                         whileHover={{ scale: 1.1 }}
@@ -66,7 +66,7 @@ const JobJourneyUI = () => {
                         <Flex mb={4} width="100%" alignItems="center">
                             {/* Logo */}
                             <Box>
-                                <img src={logo} alt="logo" style={{ width: '330px', height: 'auto' }} />
+                                <img src={logo} alt="logo" style={{ width: '355px', height: 'auto' }} />
                             </Box>
 
                             {/* Name & Title */}
@@ -149,35 +149,36 @@ const JobJourneyUI = () => {
                                 shadow="lg"
                                 border="3px solid black"
                             >
-                                {/* Features */}
-                                <AnimatedBox
-                                    p={4}
-                                    borderRadius="md"
-                                    background="#E3DCCC"
-                                    shadow="md"
-                                    whileHover={{ scale: 1.05 }}
-                                    border="3px solid black"
-                                >
-                                    <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
-                                        Features
-                                    </Text>
-                                    <Button mt={4} colorScheme="#745236" variant="outline">
-                                        Upload
-                                    </Button>
-                                </AnimatedBox>
+                                {/*Features*/}
+                                <Flex justify="space-between" gap={8}>
+                                    {/* Left Column */}
+                                    <Box flex="1" p={4} background="#E3DCCC" borderRadius="md" shadow="md" border="3px solid black">
+                                        <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">Parse Your Resume</Text>                                            <Button mt={4} colorScheme="#745236" variant="outline">
+                                                Upload
+                                            </Button>
+                                    </Box>
 
-                                {/* Profile */}
+                                    {/* Right Column */}
+                                    <Box flex="1" p={4} background="#E3DCCC" borderRadius="md" shadow="md" border="3px solid black">
+                                        <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">Job Search</Text>                                            <Button mt={4} colorScheme="#745236" variant="outline">
+                                                Dashboard
+                                            </Button>
+                                    </Box>
+                                </Flex>
+
+                                {/* Objective */}
                                 <AnimatedBox
                                     p={4}
                                     borderRadius="md"
                                     background="#E3DCCC"
                                     shadow="md"
-                                    whileHover={{ scale: 1.05 }}
+                                    whileHover={{ scale: 1.03 }}
                                     border="3px solid black"
                                 >
                                     <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
-                                        Profile
+                                        Objective
                                     </Text>
+                                    <Text fontFamily="serif">To seamlessly guide job seekers on their career journey by analyzing resumes, extracting key insights, and presenting job opportunities like never before. Helping candidates shine one résumé at a time!</Text>
                                 </AnimatedBox>
 
                                 {/* Experience */}
@@ -186,13 +187,29 @@ const JobJourneyUI = () => {
                                     borderRadius="md"
                                     background="#E3DCCC"
                                     shadow="md"
-                                    whileHover={{ scale: 1.05 }}
+                                    whileHover={{ scale: 1.03 }}
                                     border="3px solid black"
                                 >
                                     <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
                                         Experience
                                     </Text>
-                                    <Text fontFamily="serif">Big Innovator - Sept 2024</Text>
+                                    <Text fontFamily="serif">Got Demoed at Hack The North - September 2024</Text>
+                                </AnimatedBox>
+
+                                {/* References */}
+                                <AnimatedBox
+                                    p={4}
+                                    borderRadius="md"
+                                    background="#E3DCCC"
+                                    shadow="md"
+                                    whileHover={{ scale: 1.03 }}
+                                    border="3px solid black"
+                                >
+                                    <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
+                                        References
+                                    </Text>
+                                    <Text fontFamily="serif">"Job Journey made the resume process feel like a breeze! I never knew resume scanning could be this fun."
+                                        — Recruiter @ BigCorp</Text>
                                 </AnimatedBox>
                             </VStack>
                         </Flex>
