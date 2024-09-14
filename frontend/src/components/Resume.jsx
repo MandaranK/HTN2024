@@ -254,10 +254,12 @@ export default function Resume() {
             )}
           </form>
           {status && (
-            <Text color={statusColor} mt={4}>
-            <Text color="#745236" mt={4}>
-              {status}
-            </Text>
+            <>
+                <Text color={statusColor} mt={4} />
+                <Text color="#745236" mt={4}>
+                {status}
+                </Text>
+            </>
           )}
         </VStack>
       </Box>
