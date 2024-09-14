@@ -25,4 +25,4 @@ jobs:
 
     - name: Run build (no exceptions)
       working-directory: backend
-      run: npm start
+      run: npm run build
