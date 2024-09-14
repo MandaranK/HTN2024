@@ -9,10 +9,8 @@ import {
   FormControl,
   FormHelperText,
   Divider,
-<<<<<<< HEAD
   Spinner,
   Progress,
-=======
   Modal,
   ModalOverlay,
   ModalContent,
@@ -22,7 +20,6 @@ import {
   ModalCloseButton,
   useDisclosure,
   IconButton,
->>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
 } from "@chakra-ui/react";
 import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -32,16 +29,13 @@ export default function Resume() {
   const [status, setStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
-<<<<<<< HEAD
   const [uploadProgress, setUploadProgress] = useState(0);
   const [statusColor, setStatusColor] = useState("#745236");
   const toast = useToast();
-=======
   const [feedback, setFeedback] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [modalIndex, setModalIndex] = useState(0);
   const [ atZeroModal, setZeroModal ] = useState(true);
->>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -68,12 +62,9 @@ export default function Resume() {
     }
 
     setFileName(file.name);
-<<<<<<< HEAD
     setStatus("");
     setStatusColor("#745236");
-=======
     setStatus(""); 
->>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
   };
 
   const handleFileUpload = async (e) => {
@@ -89,7 +80,6 @@ export default function Resume() {
       return;
     }
 
-<<<<<<< HEAD
     let progress = 0;
     const interval = setInterval(() => {
       progress += 10;
@@ -108,7 +98,6 @@ export default function Resume() {
         });
       }
     }, 200);
-=======
     const formData = new FormData();
     formData.append("resume", file);
 
@@ -178,7 +167,6 @@ export default function Resume() {
     if (modalIndex == 0){
       setZeroModal(true);
     }
->>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
   };
 
   return (
@@ -266,11 +254,8 @@ export default function Resume() {
             )}
           </form>
           {status && (
-<<<<<<< HEAD
             <Text color={statusColor} mt={4}>
-=======
             <Text color="#745236" mt={4}>
->>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
               {status}
             </Text>
           )}
