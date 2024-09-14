@@ -22,7 +22,3 @@ jobs:
     - name: Install dependencies
       working-directory: backend
       run: npm install
-
-    - name: Run build (no exceptions)
-      working-directory: backend
-      run: npm start

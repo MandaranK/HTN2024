@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -6,21 +6,42 @@ import {
   Text,
   VStack,
   Center,
-  useToast,
   FormControl,
   FormHelperText,
   Divider,
+<<<<<<< HEAD
   Spinner,
   Progress,
+=======
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  IconButton,
+>>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
 } from "@chakra-ui/react";
+import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import axios from "axios";
+import PropTypes from "prop-types";
 
 export default function Resume() {
   const [status, setStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
+<<<<<<< HEAD
   const [uploadProgress, setUploadProgress] = useState(0);
   const [statusColor, setStatusColor] = useState("#745236");
   const toast = useToast();
+=======
+  const [feedback, setFeedback] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modalIndex, setModalIndex] = useState(0);
+  const [ atZeroModal, setZeroModal ] = useState(true);
+>>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -47,8 +68,12 @@ export default function Resume() {
     }
 
     setFileName(file.name);
+<<<<<<< HEAD
     setStatus("");
     setStatusColor("#745236");
+=======
+    setStatus(""); 
+>>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
   };
 
   const handleFileUpload = async (e) => {
@@ -64,6 +89,7 @@ export default function Resume() {
       return;
     }
 
+<<<<<<< HEAD
     let progress = 0;
     const interval = setInterval(() => {
       progress += 10;
@@ -82,6 +108,77 @@ export default function Resume() {
         });
       }
     }, 200);
+=======
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    try {
+      const response = await axios.post("http://localhost:5000/analyze-resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setFeedback(response.data.feedback);
+      setModalIndex(0);
+      onOpen();
+      setStatus("Upload successful!");
+    } catch (error) {
+      console.error("Error uploading the resume:", error);
+      setStatus(
+        error.response?.data?.error || "An error occurred while uploading the resume."
+      );
+      onOpen();
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const feedbackSections = [
+    "Resume Review",
+    "Overall Structure and Format",
+    "Education",
+    "Technical Skills",
+    "Work Experience",
+  ];
+
+  const renderFeedback = (feedback) => {
+    const feedbackLines = feedback.split("**").filter(line => line.trim());
+
+    return feedbackLines.map((line, index) => (
+      <Box key={index} mt={index > 0 ? 4 : 0}>
+        {line.includes(':') ? (
+          <Text fontWeight="bold" color="#745236">
+            {line.split(':')[0]}:
+            <Text as="span" fontWeight="normal" color="#745236">
+              {line.split(':')[1]}
+            </Text>
+          </Text>
+        ) : (
+          <Text color="#745236">{line}</Text>
+        )}
+      </Box>
+    ));
+  };
+
+  const handleNextModal = () => {
+    if (modalIndex < feedbackSections.length - 1) {
+      setZeroModal(false);
+      setModalIndex(modalIndex + 1);
+    } else {
+      onClose();
+    }
+  };
+
+  const handlePrevModal = () => {
+    if (modalIndex > 0){
+      setModalIndex(modalIndex - 1);
+    }
+
+    if (modalIndex == 0){
+      setZeroModal(true);
+    }
+>>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
   };
 
   return (
@@ -130,7 +227,7 @@ export default function Resume() {
                 <Input
                   type="file"
                   id="resume-upload"
-                  accept=".pdf, .doc, .docx"
+                  accept=".pdf,.doc,.docx"
                   size="md"
                   style={{ display: "none" }}
                   onChange={handleFileChange}
@@ -169,12 +266,52 @@ export default function Resume() {
             )}
           </form>
           {status && (
+<<<<<<< HEAD
             <Text color={statusColor} mt={4}>
+=======
+            <Text color="#745236" mt={4}>
+>>>>>>> b38990356a3edd9924d6032bea51d65eb2c27e2a
               {status}
             </Text>
           )}
         </VStack>
       </Box>
+
+      {/* Modal Structure */}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent bg="#E3DCCC">
+          <ModalHeader color="#745236">{feedbackSections[modalIndex]}</ModalHeader>
+          <ModalCloseButton color="#745236" />
+          <ModalBody>
+            {status === "Upload successful!" ? (
+              <Box>{renderFeedback(feedback.split('\n\n')[modalIndex])}</Box>
+            ) : (
+              <Text color="#745236">{status}</Text>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            {status === "Upload successful!" && (
+              <>
+                <IconButton
+                  icon={<ArrowBackIcon />}
+                  colorScheme="teal"
+                  onClick={handlePrevModal}
+                  disabled={atZeroModal}
+                />
+                <IconButton
+                  icon={<ArrowForwardIcon />}
+                  colorScheme="teal"
+                  onClick={handleNextModal}
+                />
+              </>
+            )}
+            <Button variant="ghost" colorScheme="teal" onClick={onClose} ml={3}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Center>
   );
 }
@@ -184,3 +321,7 @@ const CustomFileInput = ({ children }) => (
     {children}
   </Box>
 );
+
+CustomFileInput.propTypes = {
+  children: PropTypes.node.isRequired,
+};
