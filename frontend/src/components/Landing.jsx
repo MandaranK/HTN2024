@@ -8,12 +8,12 @@ import {
     IconButton,
     Button,
     Avatar,
-    Stack,
     Container,
     useColorModeValue,
 } from '@chakra-ui/react';
 import { PhoneIcon, EmailIcon, InfoIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
+import logo from '../assets/logo.jpg';
 
 const AnimatedBox = motion(Box);
 
@@ -26,14 +26,14 @@ const JobJourneyUI = () => {
                 justify="space-between"
                 align="center"
                 p={4}
-                background= "#745236"
+                background="#745236"
                 borderRadius="lg"
                 shadow="lg"
                 mb={8}
             >
                 <Flex align="center">
                     <Avatar name="Job Journey" size="lg" mr={4} />
-                    <Text fontSize="2xl" fontWeight="bold" color="#E3DCCC">
+                    <Text fontSize="2xl" fontWeight="bold" color="#E3DCCC" fontFamily="serif">
                         Job Journey
                     </Text>
                 </Flex>
@@ -44,12 +44,26 @@ const JobJourneyUI = () => {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                         >
-                            <Text fontSize="lg" fontWeight="medium" color="#E3DCCC">
+                            <Text fontSize="lg" fontWeight="medium" color="#E3DCCC" fontFamily="serif">
                                 {item}
                             </Text>
                         </AnimatedBox>
                     ))}
                 </HStack>
+            </Flex>
+
+            {/* Logo and Name */}
+            <Flex mb={4} width="100%" alignItems="center">
+                {/* Logo */}
+                <Box>
+                    <img src={logo} alt="logo" style={{ width: '330px', height: 'auto' }} />
+                </Box>
+
+                {/* Name & Title */}
+                <Box ml={4}>
+                    <Text fontSize="8xl" fontWeight="bold" fontFamily="serif">Job Journey</Text>
+                    <Text fontSize="2xl" fontFamily="serif">Resume Parser</Text>
+                </Box>
             </Flex>
 
             <Flex direction={{ base: 'column', md: 'row' }} gap={8}>
@@ -62,36 +76,55 @@ const JobJourneyUI = () => {
                     shadow="lg"
                     align="start"
                     minW={{ base: 'full', md: '25%' }}
+                    spacing={4}
                 >
-                    <IconButton
-                        icon={<PhoneIcon />}
-                        aria-label="Phone"
-                        colorScheme="#745236"
-                        size="lg"
-                        variant="ghost"
-                        isRound
-                    />
-                    <Text>123-456-7890</Text>
+                    {/* Contact Information */}
+                    <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">Contact</Text>
 
-                    <IconButton
-                        icon={<EmailIcon />}
-                        aria-label="Email"
-                        colorScheme="#745236"
-                        size="lg"
-                        variant="ghost"
-                        isRound
-                    />
-                    <Text>hello@hackthenorth.com</Text>
+                    <HStack spacing={3}>
+                        <IconButton
+                            icon={<PhoneIcon color="#745236" />}
+                            aria-label="Phone"
+                            size="lg"
+                            isRound
+                            borderColor="#745236"
+                            borderWidth="2px"
+                            backgroundColor="transparent"
+                            _hover={{ backgroundColor: "white" }} // Background color when hovered
+                            _active={{ backgroundColor: "#E3DCCC" }} // Background color when button is clicked
+                        />
+                        <Text fontFamily="serif">123-456-7890</Text>
+                    </HStack>
 
-                    <IconButton
-                        icon={<InfoIcon />}
-                        aria-label="Location"
-                        colorScheme="#745236"
-                        size="lg"
-                        variant="ghost"
-                        isRound
-                    />
-                    <Text>University of Waterloo</Text>
+                    <HStack spacing={3}>
+                        <IconButton
+                            icon={<EmailIcon color="#745236" />}
+                            aria-label="Email"
+                            size="lg"
+                            isRound
+                            borderColor="#745236"
+                            borderWidth="2px"
+                            backgroundColor="transparent"
+                            _hover={{ backgroundColor: "white" }} // Background color when hovered
+                            _active={{ backgroundColor: "#E3DCCC" }} // Background color when button is clicked
+                        />
+                        <Text fontFamily="serif">hello@hackthenorth.com</Text>
+                    </HStack>
+
+                    <HStack spacing={3}>
+                        <IconButton
+                            icon={<InfoIcon color="#745236" />}
+                            aria-label="Location"
+                            size="lg"
+                            isRound
+                            borderColor="#745236"
+                            borderWidth="2px"
+                            backgroundColor="transparent"
+                            _hover={{ backgroundColor: "white" }} // Background color when hovered
+                            _active={{ backgroundColor: "#E3DCCC" }} // Background color when button is clicked
+                        />
+                        <Text fontFamily="serif">University of Waterloo</Text>
+                    </HStack>
                 </VStack>
 
                 {/* Main Content */}
@@ -112,7 +145,7 @@ const JobJourneyUI = () => {
                         shadow="md"
                         whileHover={{ scale: 1.05 }}
                     >
-                        <Text fontSize="2xl" fontWeight="bold" color="#745236">
+                        <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
                             Features
                         </Text>
                         <Button mt={4} colorScheme="#745236" variant="outline">
@@ -128,7 +161,7 @@ const JobJourneyUI = () => {
                         shadow="md"
                         whileHover={{ scale: 1.05 }}
                     >
-                        <Text fontSize="2xl" fontWeight="bold" color="#745236">
+                        <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
                             Profile
                         </Text>
                     </AnimatedBox>
@@ -141,10 +174,10 @@ const JobJourneyUI = () => {
                         shadow="md"
                         whileHover={{ scale: 1.05 }}
                     >
-                        <Text fontSize="2xl" fontWeight="bold" color="#745236">
+                        <Text fontSize="2xl" fontWeight="bold" fontFamily="serif">
                             Experience
                         </Text>
-                        <Text color="#745236">Big Innovator - Sept 2024</Text>
+                        <Text fontFamily="serif">Big Innovator - Sept 2024</Text>
                     </AnimatedBox>
                 </VStack>
             </Flex>
