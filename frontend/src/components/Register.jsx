@@ -1,14 +1,9 @@
-import React from "react"
 import {
     Box,
     Input,
     Button,
     VStack,
     Text,
-    Stack,
-    Spinner,
-    Divider,
-    Select,
     FormControl,
     FormLabel,
     Center,
@@ -38,8 +33,6 @@ export default function Register() {
                 <FormLabel>Email</FormLabel>
                 <Input
                     placeholder="name@example.com"
-                    // value
-                    // on change
                     borderColor="#745236"
                     _hover={{ borderColor: "#745236" }}
                 />
@@ -49,8 +42,6 @@ export default function Register() {
                 <FormLabel>Password</FormLabel>
                 <Input
                     placeholder="banana123"
-                    // value
-                    // on change
                     borderColor="#745236"
                     _hover={{ borderColor: "#745236" }}
                 />
@@ -60,8 +51,6 @@ export default function Register() {
                 <FormLabel>Confirm password</FormLabel>
                 <Input
                     placeholder="banana123"
-                    // value
-                    // on change
                     borderColor="#745236"
                     _hover={{ borderColor: "#745236" }}
                 />
