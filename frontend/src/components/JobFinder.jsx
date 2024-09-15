@@ -12,87 +12,19 @@ import {
   FormLabel,
   useToast,
   Center,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@chakra-ui/react";
-
-const mockJobs = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    company: "Tech Corp",
-    location: "Toronto, Remote",
-    description: "Develop scalable software solutions for cloud-based applications using React and Node.js.",
-    type: "full-time",
-    salary: 70000,
-    date: "last-7-days",
-  },
-  {
-    id: 2,
-    title: "Frontend Developer",
-    company: "Designify",
-    location: "New York",
-    description: "Build dynamic UI components using React and Chakra UI. Experience with JavaScript and TypeScript required.",
-    type: "full-time",
-    salary: 80000,
-    date: "last-30-days",
-  },
-  {
-    id: 3,
-    title: "Data Analyst",
-    company: "DataWorks",
-    location: "San Francisco",
-    description: "Analyze large datasets to derive business insights. Proficiency in SQL and Python needed.",
-    type: "part-time",
-    salary: 60000,
-    date: "last-24-hours",
-  },
-  {
-    id: 4,
-    title: "Project Manager",
-    company: "InnovateX",
-    location: "Vancouver",
-    description: "Manage cross-functional teams to deliver projects on time and on budget. Experience in project management tools is required.",
-    type: "contract",
-    salary: 90000,
-    date: "last-7-days",
-  },
-  {
-    id: 5,
-    title: "UX Designer",
-    company: "Creative Labs",
-    location: "Remote",
-    description: "Design user-friendly interfaces with a focus on user experience. Familiarity with design tools like Figma is a plus.",
-    type: "full-time",
-    salary: 75000,
-    date: "last-30-days",
-  },
-  {
-    id: 6,
-    title: "Backend Developer",
-    company: "Web Solutions",
-    location: "Seattle",
-    description: "Develop and maintain server-side applications using Node.js and Express. Experience with databases like MongoDB is required.",
-    type: "full-time",
-    salary: 85000,
-    date: "last-7-days",
-  },
-];
-
-const allSkills = ["React", "JavaScript", "Python", "SQL", "Project Management", "TypeScript", "Node.js", "Figma"];
-
-const skillBasedRecommendations = (skills) => {
-  return mockJobs.filter(job => {
-    return skills.some(skill => job.description.includes(skill));
-  });
-};
-
-const getMatchColor = (percentage) => {
-  if (percentage >= 80) return "#6b8e23";
-  if (percentage >= 60) return "#ffa500";
-  return "#dc143c";
-};
+import axios from "axios";
+import { inDemandTechStack } from "../constants/tools"; 
 
 export default function JobFinder() {
-  const [jobListings, setJobListings] = useState(mockJobs);
+  const [jobListings, setJobListings] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
   const [filter, setFilter] = useState("");
@@ -100,27 +32,41 @@ export default function JobFinder() {
   const [salaryRange, setSalaryRange] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [skills, setSkills] = useState(["React", "JavaScript", "SQL"]);
-  const jobsPerPage = 3;
+  const [selectedJob, setSelectedJob] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const fetchJobs = () => {
+  const fetchJobs = async () => {
     setIsLoading(true);
     setError(null);
 
-    setTimeout(() => {
-      let filteredJobs = mockJobs.filter((job) => {
-        const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesLocation = job.location.toLowerCase().includes(location.toLowerCase());
-        const matchesFilter = filter ? job.type === filter : true;
-        const matchesDate = dateFilter ? job.date === dateFilter : true;
-        const matchesSalary = salaryRange ? job.salary >= parseInt(salaryRange.split('-')[0]) && job.salary <= parseInt(salaryRange.split('-')[1]) : true;
-
-        return matchesSearch && matchesLocation && matchesFilter && matchesDate && matchesSalary;
+    try {
+      const response = await axios.get("https://jsearch.p.rapidapi.com/search", {
+        headers: {
+          'X-RapidAPI-Key': 'ebc4358f37msh8fa8093e8cf792cp176dd7jsn6ec094519f70', 
+          'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
+        },
+        params: {
+          query: searchTerm,
+          location: location,
+          page: '1', 
+          num_pages: '1' 
+        }
       });
 
-      const recommendedJobs = skillBasedRecommendations(skills);
+      let filteredJobs = response.data.data.filter((job) => {
+        const matchesFilter = filter ? job.job_employment_type === filter : true;
+        const matchesDate = dateFilter ? job.posted_at === dateFilter : true;
+        const matchesSalary = salaryRange
+          ? job.job_salary_range_min >= parseInt(salaryRange.split("-")[0]) &&
+            job.job_salary_range_max <= parseInt(salaryRange.split("-")[1])
+          : true;
+
+        return matchesFilter && matchesDate && matchesSalary;
+      });
+
+      const recommendedJobs = skillBasedRecommendations(skills, inDemandTechStack, filteredJobs);
       filteredJobs = [...filteredJobs, ...recommendedJobs];
 
       if (filteredJobs.length === 0) {
@@ -134,15 +80,26 @@ export default function JobFinder() {
       }
 
       setJobListings(filteredJobs);
+    } catch {
+      setError("Error fetching jobs. Please try again later.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
-  const handleLoadMore = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+  const skillBasedRecommendations = (userSkills, techStack, jobs) => {
+    return jobs.filter((job) => {
+      return (
+        userSkills.some((skill) => job.job_description.includes(skill)) ||
+        techStack.some((tech) => job.job_description.includes(tech))
+      );
+    });
   };
 
-  const paginatedJobs = jobListings.slice(0, currentPage * jobsPerPage);
+  const handleJobClick = (job) => {
+    setSelectedJob(job);
+    onOpen();
+  };
 
   return (
     <Center minH="100vh" bg="#E3DCCC">
@@ -259,90 +216,54 @@ export default function JobFinder() {
           )}
 
           <VStack spacing={4} w="full">
-            {paginatedJobs.map((job) => {
-              const matchPercentage = Math.floor(Math.random() * 100);
-              return (
-                <Box
-                  key={job.id}
-                  p={4}
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  borderColor="#745236"
-                  bg="white"
-                  shadow="md"
-                  w="full"
-                  textAlign="left"
-                >
-                  <Text fontWeight="bold" color="#745236">
-                    {job.title}
-                  </Text>
-                  <Text color="gray.600">{job.company}</Text>
-                  <Text>{job.location}</Text>
-                  <Text mt={2} noOfLines={2}>
-                    {job.description}
-                  </Text>
-                  <Text mt={2} color={getMatchColor(matchPercentage)}>
-                    Match Percentage: {matchPercentage}%
-                  </Text>
-                  <Button mt={4} size="sm" bg="#745236" color="white" _hover={{ bg: "#6b4f3c" }}>
-                    Apply Now
-                  </Button>
-                </Box>
-              );
-            })}
+            {jobListings.map((job) => (
+              <Box
+                key={job.job_id}
+                p={4}
+                borderWidth="1px"
+                borderRadius="lg"
+                borderColor="#745236"
+                bg="white"
+                shadow="md"
+                w="full"
+                textAlign="left"
+                onClick={() => handleJobClick(job)}
+                cursor="pointer"
+              >
+                <Text fontWeight="bold" color="#745236">
+                  {job.job_title}
+                </Text>
+                <Text color="gray.600">{job.employer_name}</Text>
+                <Text>{job.job_city}, {job.job_country}</Text>
+                <Text mt={2} noOfLines={2}>
+                  {job.job_description}
+                </Text>
+              </Box>
+            ))}
           </VStack>
 
-          {paginatedJobs.length < jobListings.length && (
-            <Button
-              mt={4}
-              bg="#745236"
-              color="white"
-              _hover={{ bg: "#6b4f3c" }}
-              onClick={handleLoadMore}
-            >
-              Load More Jobs
-            </Button>
-          )}
-
-          <Box mt={8} w="full">
-            <Text fontSize="2xl" fontWeight="bold" color="#745236">
-              Recommended Jobs Based on Your Skills
-            </Text>
-            <Divider borderColor="#745236" />
-            <VStack spacing={4} w="full" mt={4}>
-              {skillBasedRecommendations(skills).map((job) => {
-                const matchPercentage = Math.floor(Math.random() * 100);
-                return (
-                  <Box
-                    key={job.id}
-                    p={4}
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    borderColor="#745236"
-                    bg="white"
-                    shadow="md"
-                    w="full"
-                    textAlign="left"
-                  >
-                    <Text fontWeight="bold" color="#745236">
-                      {job.title}
-                    </Text>
-                    <Text color="gray.600">{job.company}</Text>
-                    <Text>{job.location}</Text>
-                    <Text mt={2} noOfLines={2}>
-                      {job.description}
-                    </Text>
-                    <Text mt={2} color={getMatchColor(matchPercentage)}>
-                      Match Percentage: {matchPercentage}%
-                    </Text>
-                    <Button mt={4} size="sm" bg="#745236" color="white" _hover={{ bg: "#6b4f3c" }}>
-                      Apply Now
-                    </Button>
-                  </Box>
-                );
-              })}
-            </VStack>
-          </Box>
+          <Modal isOpen={isOpen} onClose={onClose} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>{selectedJob?.job_title}</ModalHeader>
+              <ModalBody>
+                <Text>
+                  <strong>Company:</strong> {selectedJob?.employer_name}
+                </Text>
+                <Text>
+                  <strong>Location:</strong> {selectedJob?.job_city}, {selectedJob?.job_country}
+                </Text>
+                <Text mt={2}>
+                  <strong>Description:</strong> {selectedJob?.job_description}
+                </Text>
+              </ModalBody>
+              <ModalFooter>
+                <Button bg="#745236" color="white" _hover={{ bg: "#6b4f3c" }} onClick={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </VStack>
       </Box>
     </Center>
